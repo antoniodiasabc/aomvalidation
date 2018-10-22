@@ -10,18 +10,16 @@ public class DynamicArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
-		System.out.println("-------------------- NUOSSA ----------------");
 		if (parameter.getParameterIndex() == 0) {
 			return parameter.getParameterType().equals(String.class);
 		} else {
-			return true; // parameter.getParameterType().equals(java.lang.Object[]);
+			return true;
 		}
 	}
 
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 			NativeWebRequest webRequest, WebDataBinderFactory binderFactory) throws Exception {
-		System.out.println(" OPA -------------------- NUOSSA ----------------");
 		if (parameter.getParameterIndex() == 0) {
 			return new String("ruleName");
 		} else {

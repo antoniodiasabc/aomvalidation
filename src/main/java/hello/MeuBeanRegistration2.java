@@ -1,7 +1,6 @@
 package hello;
 
 import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -50,40 +49,8 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory arg0) throws BeansException {
-		System.out.println("@@@@@@@@@@@@   PASSOU " + arg0.toString());
 		clBeanFactory = arg0;
-		// createNewWebservice("verdade5");
 	}
-
-	/*
-	 * public void createNewWebservice(String epName) { // TODO tem qser chamado
-	 * por acao do usuario String command = "exercicio8"; Object dynamicObject =
-	 * createWebServiceDynamic(command, epName);// createDynamicObject(epName);
-	 * postProcessBeanDefinitionRegistry(dynamicObject); }
-	 * 
-	 * private void postProcessBeanDefinitionRegistry(Object dynamicObject)
-	 * throws BeansException { try { RootBeanDefinition beanDefinition =
-	 * createBeanDefinition(dynamicObject); String nomeReg = "bean" + (int)
-	 * (Math.random() * Math.random() * 1000000);
-	 * registry.registerBeanDefinition(nomeReg, beanDefinition);
-	 * 
-	 * } catch (Exception e) { e.printStackTrace(); } }
-	 * 
-	 * private RootBeanDefinition createBeanDefinition(Object dynamicObject) {
-	 * RootBeanDefinition beanDefinition = new
-	 * RootBeanDefinition(dynamicObject.getClass());
-	 * beanDefinition.setTargetType(dynamicObject.getClass());
-	 * beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
-	 * beanDefinition.setBeanClass(dynamicObject.getClass());
-	 * ConstructorArgumentValues argumentValues = new
-	 * ConstructorArgumentValues();
-	 * argumentValues.addGenericArgumentValue("exercicio8", "String");
-	 * beanDefinition.setConstructorArgumentValues(argumentValues);
-	 * beanDefinition.setFactoryMethodName("handleResults2");
-	 * beanDefinition.setFactoryBeanName("testeWr");
-	 * beanDefinition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_NAME);
-	 * beanDefinition.setAutowireCandidate(true); return beanDefinition; }
-	 */
 
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
@@ -377,16 +344,6 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 			}
 			exemploJavaBean = af.generate(produto);
 			
-
-//			try {
-//				Method declaredMethod = exemploJavaBean.getClass().getDeclaredMethod("executeOperation", String.class,
-//						Object[].class);
-//				Object result = declaredMethod.invoke(exemploJavaBean, "ruleName", null);
-//				System.out.println(result);
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-
 
 		} catch (Exception e) {
 			e.printStackTrace();
