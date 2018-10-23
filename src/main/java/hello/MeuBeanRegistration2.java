@@ -39,26 +39,25 @@ import org.springframework.stereotype.Component;
 @Component(value = "testeW2")
 public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor, EnvironmentAware {
 
+	private static final String NOMEENDPOINT = "nomeendpoint1";
 	BeanDefinitionRegistry registry;
-	ConfigurableListableBeanFactory clBeanFactory;
 
 	@Autowired
 	Environment env;
-
+	
 	Map<String, Object> mapObjects = new HashMap<>();
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory arg0) throws BeansException {
-		clBeanFactory = arg0;
+
 	}
 
 	@Override
 	public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
-
 		String command = "";
 		String nomeEP = "";
 
-		List<String> endPointNames = getEndPointName("nomeendpoint2");
+		List<String> endPointNames = getEndPointName(NOMEENDPOINT);
 		for (String nomeEndPoint : endPointNames) {
 			if (nomeEndPoint != null) {
 				String[] split = nomeEndPoint.split("/");
@@ -69,16 +68,12 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 			}
 
 			Object exercicio1 = createWebServiceDynamic(command, nomeEP);
-
 			System.out.println(" comando " + command + "  classe [" + exercicio1.getClass() + "]");
-			this.registry = registry;
 			mapObjects.put(command, exercicio1);
 
 			try {
 				RootBeanDefinition beanDefinition = new RootBeanDefinition(exercicio1.getClass());
-				beanDefinition.setTargetType(exercicio1.getClass()); // The
-																		// service
-																		// interface
+				beanDefinition.setTargetType(exercicio1.getClass()); 
 				beanDefinition.setRole(BeanDefinition.ROLE_APPLICATION);
 				beanDefinition.setBeanClass(exercicio1.getClass());
 				beanDefinition.setFactoryMethodName("handleResults2");
@@ -89,9 +84,6 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 				beanDefinition.setAutowireMode(GenericBeanDefinition.AUTOWIRE_BY_NAME);
 				beanDefinition.setAutowireCandidate(true);
 				String nomeReg = "teste" + (int) (Math.random() * Math.random() * 1000000);
-				if (registry.containsBeanDefinition(nomeReg)) {
-					registry.removeBeanDefinition(nomeReg);
-				}
 				registry.registerBeanDefinition(nomeReg, beanDefinition);
 
 			} catch (Exception e) {
@@ -110,19 +102,14 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 
 			// criando property types
 			IPropertyType dataNascPropertyType = new GenericPropertyType("dataFabricacao", Date.class);
-			IPropertyType nomePropertyType = new GenericPropertyType("nome", String.class);
-			IPropertyType validType = new GenericPropertyType("valido", String.class);
-
+	
 			Map<String, String[]> nomeDoServico = new HashMap<String, String[]>();
 			String[] nomeEndPoint = new String[1];
 			nomeEndPoint[0] = nomeEP;
 			nomeDoServico.put("value", nomeEndPoint);
-			//validType.setProperty("requestmapping", nomeDoServico);
 
 			// adicionando property types no tipo de entidade
 			tipoProduto.addPropertyType(dataNascPropertyType);
-			tipoProduto.addPropertyType(nomePropertyType);
-			tipoProduto.addPropertyType(validType);
 			tipoProduto.addOperation("anosFabricacao", new CalculaAnos("dataFabricacao"));
 			
 			Map<String, Object> propriedades = new HashMap<>();
@@ -131,107 +118,38 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 
 			GregorianCalendar dataFabr = new GregorianCalendar();
 			dataFabr.set(2010, 11, 23);
-			Map<String, Object> parametersSubstring = new HashMap<String, Object>();
-			parametersSubstring.put("dataFabricacao", "2016");
-			parametersSubstring.put("perecivel", true);
-
+			
 			tipoProduto.setProperty("restcontroller", true);
 
 			IEntity produto = tipoProduto.createNewEntity();
-			produto.setProperty("nome", "Notebook DELL");
 			produto.setProperty("dataFabricacao", dataFabr.getTime());
-
 			exemploJavaBean = af.generate(produto);
-
-			ObjectPrinter.printClass(exemploJavaBean);
-
+			//ObjectPrinter.printClass(exemploJavaBean);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return exemploJavaBean;
 	}
 
-	public Object createDynamicObject(String epName) {
-		String objectName = "exercicio8";
-		return criaObjetoDinamico(objectName, epName);
-	}
-
-	private Object criaObjetoDinamico(String nome, String epName) {
-		Object exemploJavaBean = null;
-		try {
-			AdapterFactory af = AdapterFactory.getInstance("AnnotationMapping.json");
-
-			IEntityType tipoProduto = new GenericEntityType(nome);
-
-			// criando property types
-			IPropertyType dataNascPropertyType = new GenericPropertyType("dataFabricacao", Date.class);
-			IPropertyType nomePropertyType = new GenericPropertyType("nome", String.class);
-			IPropertyType validType = new GenericPropertyType("valido", String.class);
-
-			Map<String, String[]> nomeDoServico = new HashMap<String, String[]>();
-			String[] nomeEndPoint = new String[1];
-			nomeEndPoint[0] = epName; // "verdade3";
-			nomeDoServico.put("value", nomeEndPoint);
-
-			// nomePropertyType.setProperty("requestmapping", nomeDoServico);
-			validType.setProperty("requestmapping", nomeDoServico);
-
-			// adicionando property types no tipo de entidade
-			tipoProduto.addPropertyType(dataNascPropertyType);
-			tipoProduto.addPropertyType(nomePropertyType);
-			tipoProduto.addPropertyType(validType);
-
-			tipoProduto.addOperation("anosFabricacao", new CalculaAnos("dataFabricacao"));
-
-			GregorianCalendar dataFabr = new GregorianCalendar();
-			dataFabr.set(2010, 11, 23);
-			Map<String, Object> parametersSubstring = new HashMap<String, Object>();
-			parametersSubstring.put("dataFabricacao", "2016");
-			parametersSubstring.put("perecivel", true);
-			nomePropertyType.setProperty("ruleAttribute", parametersSubstring);
-
-			tipoProduto.setProperty("restcontroller", true);
-
-			IEntity produto = tipoProduto.createNewEntity();
-			produto.setProperty("nome", "Notebook DELL");
-			produto.setProperty("dataFabricacao", dataFabr.getTime());
-
-			exemploJavaBean = af.generate(produto);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return exemploJavaBean;
-	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private IEntity createPropertyAndSetValues(Map<String, Object> props, IEntityType tipoProduto) throws Exception {
 		Set<String> keySet = props.keySet();
 		for (String key : keySet) {
 			GenericPropertyType propertyType = new GenericPropertyType(key, String.class);
-
-			Map<String, Object> nomeDoServico = new HashMap<String, Object>();
-			nomeDoServico.put("value", "/verdade2");
-			propertyType.setProperty("requestmapping", nomeDoServico);
 			tipoProduto.addPropertyType(propertyType);
 
 			if (key.contains("@")) {
 				String partes[] = key.split("@");
 				System.out.println(" chave: " + partes[0] + " regra: " + partes[1]);
 				String ruleObject = "org.esfinge.aom.model.impl." + partes[1];
-				// Object instance = Class.forName(ruleObject).newInstance();
-
 				Class[] type = { String.class };
 				Class classDefinition = Class.forName(ruleObject);
 				Constructor cons = classDefinition.getConstructor(type);
-				Object[] obj = new Object[1];// { "JLabel"};
+				Object[] obj = new Object[1];
 				obj[0] = key;
 				Object ruleObjectInstance = cons.newInstance(obj);
-				// tipoProduto.addOperation(partes[0], new PeriodoConsumo(key));
-				tipoProduto.addOperation("ruleName", (RuleObject) ruleObjectInstance);
-			
-				Map<String, Object> propriedades = new HashMap<>();
-				propriedades.put("requestmapping", nomeDoServico);			
-				tipoProduto.setOperationProperties(propriedades);
+				tipoProduto.addOperation("ruleName", (RuleObject) ruleObjectInstance);	
 			}
 		}
 
@@ -305,9 +223,7 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 
 		try {
 			AdapterFactory af = AdapterFactory.getInstance("AnnotationMapping.json");
-
 			IEntityType tipoProduto = new GenericEntityType("hello", command);
-
 			IEntity produto = createPropertyAndSetValues(props, tipoProduto);
 
 			// EL
@@ -330,20 +246,17 @@ public class MeuBeanRegistration2 implements BeanDefinitionRegistryPostProcessor
 				String resultJson = prettyPrint(props, resultEl);
 				produto.setProperty("valido", resultJson);
 			} else {
-
 				Object resultOperation = "0";
 				try {
 					resultOperation = produto.executeOperation("ruleName");
 				} catch (Exception e) {
 					System.out.println("Erro: " + e);
 				}
-
-				System.out.println("validade por: " + resultOperation);
-				String resultJson = prettyPrint(props, resultOperation);
-				produto.setProperty("valido", resultJson);
+				//System.out.println("result: " + resultOperation);
+				//String resultJson = prettyPrint(props, resultOperation);
+				produto.setProperty("valido", resultOperation);
 			}
-			exemploJavaBean = af.generate(produto);
-			
+			exemploJavaBean = af.generate(produto);			
 
 		} catch (Exception e) {
 			e.printStackTrace();

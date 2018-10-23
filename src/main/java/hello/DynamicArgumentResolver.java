@@ -8,6 +8,17 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 public class DynamicArgumentResolver implements HandlerMethodArgumentResolver {
 
+	PropertyConfiguration propertyConfiguration;
+
+	public DynamicArgumentResolver() {
+		super();
+	}
+
+	public DynamicArgumentResolver(PropertyConfiguration pConfiguration) {
+		super();
+		propertyConfiguration = pConfiguration;
+	}
+
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
 		if (parameter.getParameterIndex() == 0) {
@@ -23,7 +34,28 @@ public class DynamicArgumentResolver implements HandlerMethodArgumentResolver {
 		if (parameter.getParameterIndex() == 0) {
 			return new String("ruleName");
 		} else {
-			return null;
+			String description = webRequest.getDescription(false);
+			System.out.println(description);
+			String[] exercicioparam = propertyConfiguration.getExercicioparam();
+			Object[] objects = new Object[1];
+			if (exercicioparam.length == 1) {
+				objects[0] = exercicioparam[0];
+			} else {
+				objects[0] = exercicioparam[0];
+				for (int i = 0; i < exercicioparam.length; i++) {
+					if (exercicioparam[i] != null) {
+						String valor = exercicioparam[i];
+						String[] split = valor.split("_");
+						if (split.length == 2) {
+							if (description.contains(split[1])) {
+								objects[0] = split[0];
+								break;
+							}
+						}
+					}
+				}
+			}
+			return objects;
 		}
 	}
 }
